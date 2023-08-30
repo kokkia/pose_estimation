@@ -12,7 +12,7 @@ class pose_observer:
         # time
         self.dt = dt
         # gain
-        self.set_gain(10.0, 0.1)
+        self.set_gain(20.0, 0.1)
         self.q_vec_err_sum = 0.0
         
         return
@@ -28,8 +28,8 @@ class pose_observer:
         g_vec_from_q = q2g_vec(self.q)
         q_vec_err = - np.cross(g_vec_from_sensor, g_vec_from_q)
         self.q_vec_err_sum += q_vec_err * self.dt
-        # w = w + self.kp * q_vec_err + self.ki * self.q_vec_err_sum
-        self.q = integrate_quaternion( self.q, w, self.dt)
+        w = w + self.kp * q_vec_err + self.ki * self.q_vec_err_sum
+        self.q = integrate_quaternion(self.q, w, self.dt)
         return self.q
     
     def get_rpy(self):

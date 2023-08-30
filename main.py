@@ -66,7 +66,7 @@ while True:
         else:
             q = observer.update(w, g_vec)
             r, p, y = observer.get_rpy()
-            if cnt % 10:
+            if cnt % 5 == 0:
                 print("rpy = ", np.degrees(r), np.degrees(p), np.degrees(y), t)
 
     except json.JSONDecodeError:

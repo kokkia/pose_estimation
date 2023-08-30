@@ -6,7 +6,7 @@
 #define DEBUG 1
 
 #define G (9.8)//mps^2
-#define Ts (0.01)//s
+#define Ts (0.005)//s
 #define DEG2RAD (3.1415/180.0)
 #define RAD2DEG (180.0/3.1415)
 

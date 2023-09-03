@@ -9,6 +9,7 @@
 - https://github.com/asukiaaa/MPU9250_asukiaaa
 
 ### Ubuntu Python
+- Python3.8
 - See [requirements.txt](requirements.txt)
 
 ## How to use
@@ -17,6 +18,6 @@
 2. Launch esp32_imu with esp32
 3. Launch observer
    ```
-   $ Python main.py
+   $ python main.py
    ```
 

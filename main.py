@@ -40,10 +40,6 @@ class MPU9250_driver(object):
         self.observer = pose_observer(self.dt)
         self.observer.set_quaternion(self.q)
     
-    def set_calibration_mode(self, calibration):
-        self.calibration = calibration
-        return
-
     def get_data(self):
         byte_data = self.ser.readline()
         str_data = byte_data.decode().split()[0]
@@ -54,9 +50,9 @@ class MPU9250_driver(object):
             aX = json_data["aX"]/10.0
             aY = json_data["aY"]/10.0
             aZ = json_data["aZ"]/10.0
-            gX = - json_data["gX"] + self.gX_offset
-            gY = - json_data["gY"] + self.gY_offset
-            gZ = - json_data["gZ"] + self.gZ_offset # z方向だけ逆
+            gX = - json_data["gX"]*1.5 + self.gX_offset
+            gY = - json_data["gY"]*1.5 + self.gY_offset
+            gZ = - json_data["gZ"]*1.5 + self.gZ_offset # z方向だけ逆
 
             self.w = np.array([gX, gY, gZ])
             self.g_vec = np.array([aX, aY, aZ])
@@ -101,8 +97,8 @@ class MPU9250_driver(object):
     def estimate(self):
         if self.get_data():
             self.q = self.observer.update(self.w, self.g_vec)
-            r, p, y = self.observer.get_rpy()
             if self.cnt % 5 == 0:
+                r, p, y = self.observer.get_rpy()
                 print("rpy = ", np.degrees(r), np.degrees(p), np.degrees(y), self.t)
         else:
             pass
@@ -110,8 +106,9 @@ class MPU9250_driver(object):
 def estimation_thread(lock, observer):
     while True:
         try:
-            time.sleep(observer.dt)
+            time.sleep(observer.dt*0.6) # realtime性がないため調整
             observer.t += observer.dt
+            observer.cnt += 1
             with lock:
                 observer.estimate()
         except Exception as e:
@@ -119,15 +116,9 @@ def estimation_thread(lock, observer):
 
 def visualization_thread(lock, observer, ax, elems):
     p = np.zeros((3, 1))
-    global i
-    i = 0
-    # for j in range(100):
     while True:
         try:
             R = quaternion2R(observer.q)
-            # i += 1
-            # theta = np.radians(i * 10)
-            # R = Rz(theta)
             plt.cla()
             visualize_posture(p, R, ax, elems)
             plt.gcf().canvas.mpl_connect(
@@ -148,21 +139,20 @@ if __name__ == "__main__":
     # fig
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    
     elems = []
 
     # observer
     observer = MPU9250_driver()
     observer.calibrate_gyro_offset()
-    observer.estimation()
+    # observer.estimation()
 
     # thread
     executor = concurrent.futures.ThreadPoolExecutor(1) # 複数のスレッドを立ち上げる
     lock = threading.Lock()  # threading.Lockオブジェクトのインスタンスを1つ生成する
 
     # # # 複数スレッドで同時に同じ処理を行う
-    # executor.submit(estimation_thread, lock, observer)
+    executor.submit(estimation_thread, lock, observer)
 
     # # visualize
-    # visualization_thread(lock, observer, ax, elems) # なぜかスレッドで実行すると遅い
-    # plt.show()
+    visualization_thread(lock, observer, ax, elems) # なぜかスレッドで実行すると遅い
+    plt.show()

@@ -144,7 +144,6 @@ if __name__ == "__main__":
     # observer
     observer = MPU9250_driver()
     observer.calibrate_gyro_offset()
-    # observer.estimation()
 
     # thread
     executor = concurrent.futures.ThreadPoolExecutor(1) # 複数のスレッドを立ち上げる

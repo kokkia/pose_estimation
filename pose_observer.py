@@ -34,3 +34,6 @@ class pose_observer:
     
     def get_rpy(self):
         return quaternion2rpy(self.q)
+    
+    def get_R(self):
+        return quaternion2R(self.q)

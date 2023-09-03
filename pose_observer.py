@@ -12,9 +12,8 @@ class pose_observer:
         # time
         self.dt = dt
         # gain
-        self.set_gain(20.0, 0.1)
+        self.set_gain(5.0, 1.0)
         self.q_vec_err_sum = 0.0
-        
         return
     
     def set_quaternion(self, q):
@@ -34,3 +33,6 @@ class pose_observer:
     
     def get_rpy(self):
         return quaternion2rpy(self.q)
+    
+    def get_R(self):
+        return quaternion2R(self.q)

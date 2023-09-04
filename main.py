@@ -47,9 +47,9 @@ class MPU9250_driver(object):
             json_data = json.loads(str_data)
             if len(json_data) < 6:
                 return False
-            aX = json_data["aX"]/10.0
-            aY = json_data["aY"]/10.0
-            aZ = json_data["aZ"]/10.0
+            aX = json_data["aX"]
+            aY = json_data["aY"]
+            aZ = json_data["aZ"]
             gX = - json_data["gX"]*1.5 + self.gX_offset
             gY = - json_data["gY"]*1.5 + self.gY_offset
             gZ = - json_data["gZ"]*1.5 + self.gZ_offset # z方向だけ逆
@@ -97,7 +97,7 @@ class MPU9250_driver(object):
     def estimate(self):
         if self.get_data():
             self.q = self.observer.update(self.w, self.g_vec)
-            if self.cnt % 5 == 0:
+            if self.cnt % 10 == 0:
                 r, p, y = self.observer.get_rpy()
                 print("rpy = ", np.degrees(r), np.degrees(p), np.degrees(y), self.t)
         else:
@@ -106,7 +106,7 @@ class MPU9250_driver(object):
 def estimation_thread(lock, observer):
     while True:
         try:
-            time.sleep(observer.dt*0.6) # realtime性がないため調整
+            time.sleep(observer.dt*0.5) # realtime性がないため調整
             observer.t += observer.dt
             observer.cnt += 1
             with lock:

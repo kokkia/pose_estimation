@@ -36,8 +36,15 @@ class MPU9250_driver(object):
         self.gZs = []
 
         # observer
+        # self.mode = 'quaternion'
+        self.mode = 'rpy'
         self.q = np.array([1, 0, 0, 0])
-        self.observer = pose_observer(self.dt)
+        r, p, y = quaternion2rpy(self.q)
+        self.rpy = np.array([r, p, y])
+        if self.mode == 'quaternion':
+            self.observer = pose_observer_quaternion(self.dt)
+        elif self.mode == 'rpy':
+            self.observer = pose_observer_euler(self.dt)
         self.observer.set_quaternion(self.q)
     
     def get_data(self):
@@ -86,8 +93,15 @@ class MPU9250_driver(object):
             if self.get_data():
                 time.sleep(self.dt)
                 self.t += self.dt
-                self.cnt = 0
-                self.q = self.observer.update(self.w, self.g_vec)
+                self.cnt += 1
+                if self.mode == 'quaternion':
+                    self.q = self.observer.update(self.w, self.g_vec)
+                elif self.mode == 'rpy':
+                    self.rpy = self.observer.update(self.w, self.g_vec)
+                    self.q = self.observer.get_quaternion()
+                else:
+                    print("you should set mode")
+                    break
                 r, p, y = self.observer.get_rpy()
                 if self.cnt % 5 == 0:
                     print("rpy = ", np.degrees(r), np.degrees(p), np.degrees(y), self.t)
@@ -96,7 +110,13 @@ class MPU9250_driver(object):
 
     def estimate(self):
         if self.get_data():
-            self.q = self.observer.update(self.w, self.g_vec)
+            if self.mode == 'quaternion':
+                self.q = self.observer.update(self.w, self.g_vec)
+            elif self.mode == 'rpy':
+                self.rpy = self.observer.update(self.w, self.g_vec)
+                self.q = self.observer.get_quaternion()
+            else:
+                print("you should set mode")
             if self.cnt % 10 == 0:
                 r, p, y = self.observer.get_rpy()
                 print("rpy = ", np.degrees(r), np.degrees(p), np.degrees(y), self.t)
@@ -130,7 +150,7 @@ def visualization_thread(lock, observer, ax, elems):
             ax.set_xlim(-1,1)
             ax.set_ylim(-1,1)
             ax.set_zlim(-1,1)
-            plt.pause(0.2)
+            plt.pause(0.1)
         except Exception as e:
             print(e)
 

@@ -22,7 +22,7 @@ def Rz(theta):
     mat = np.array([[math.cos(theta),-math.sin(theta),0],[math.sin(theta),math.cos(theta),0],[0,0,1]])
     return mat
 
-def rpy(r, p, y):
+def rpy2R(r, p, y):
     r = np.dot(Ry(p),Rx(r))
     mat = np.dot(Rz(y),r)
     return mat
@@ -55,15 +55,16 @@ def quaternion2rpy(q):
     return roll, pitch, yaw
 
 def rpy2quaternion(roll, pitch, yaw):
-    # cosRoll = np.cos(roll / 2.0)
-    # double sinRoll = sin(roll / 2.0)
-    # double cosPitch = cos(pitch / 2.0)
-    # double sinPitch = sin(pitch / 2.0)
-    # double cosYaw = cos(yaw / 2.0)
-    # double sinYaw = sin(yaw / 2.0)
-    # q0 = cosRoll * cosPitch * cosYaw + sinRoll * sinPitch * sinYaw
-    # q1 = sinRoll * cosPitch * cosYaw - cosRoll * sinPitch * sinYaw
-    # q2 = cosRoll * sinPitch * cosYaw + sinRoll * cosPitch * sinYaw
-    # q3 = cosRoll * cosPitch * sinYaw - sinRoll * sinPitch * cosYaw
+    cosRoll = np.cos(roll / 2.0)
+    sinRoll = np.sin(roll / 2.0)
+    cosPitch = np.cos(pitch / 2.0)
+    sinPitch = np.sin(pitch / 2.0)
+    cosYaw = np.cos(yaw / 2.0)
+    sinYaw = np.sin(yaw / 2.0)
+    q0 = cosRoll * cosPitch * cosYaw - sinRoll * sinPitch * sinYaw
+    q1 = sinRoll * cosPitch * cosYaw + cosRoll * sinPitch * sinYaw
+    q2 = cosRoll * sinPitch * cosYaw - sinRoll * cosPitch * sinYaw
+    q3 = cosRoll * cosPitch * sinYaw + sinRoll * sinPitch * cosYaw
+    q = np.array([q0, q1, q2, q3])
     return q
     

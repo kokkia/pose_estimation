@@ -1,6 +1,8 @@
 # pose_estimation  
 
 姿勢角推定オブザーバ
+- quaternionベース
+- オイラー角ベース（ZYXオイラー角 = roll, pitch, yaw）
 
 ## Installation
 

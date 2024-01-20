@@ -23,3 +23,7 @@
    $ python main.py
    ```
 
+## Demo
+
+https://github.com/kokkia/pose_estimation/assets/40203299/0c72cce5-2f74-4215-9034-3d6f8dc7452c
+

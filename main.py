@@ -126,7 +126,7 @@ class MPU9250_driver(object):
 def estimation_thread(lock, observer):
     while True:
         try:
-            time.sleep(observer.dt*0.5) # realtime性がないため調整
+            time.sleep(observer.dt*0.4) # realtime性がないため調整
             observer.t += observer.dt
             observer.cnt += 1
             with lock:

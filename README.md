@@ -13,6 +13,9 @@
 ### Ubuntu Python
 - Python3.8
 - See [requirements.txt](requirements.txt)
+```
+$ pip install -r requirements.txt
+```
 
 ## How to use
 
@@ -22,6 +25,11 @@
    ```
    $ python main.py
    ```
+
+## Note
+
+- 角速度センサ、加速度センサともに右手系
+- 加速度センサは、平面に置いたときに、+1Gが検出される向きがZ方向の正
 
 ## Demo
 

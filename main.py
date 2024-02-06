@@ -36,8 +36,8 @@ class MPU9250_driver(object):
         self.gZs = []
 
         # observer
-        # self.mode = 'quaternion'
-        self.mode = 'rpy'
+        self.mode = 'quaternion'
+        # self.mode = 'rpy'
         self.q = np.array([1, 0, 0, 0])
         r, p, y = quaternion2rpy(self.q)
         self.rpy = np.array([r, p, y])
@@ -54,9 +54,10 @@ class MPU9250_driver(object):
             json_data = json.loads(str_data)
             if len(json_data) < 6:
                 return False
-            aX = json_data["aX"]
-            aY = json_data["aY"]
-            aZ = json_data["aZ"]
+            # ロボットの動座標系に補正
+            aX = -json_data["aX"]
+            aY = -json_data["aY"]
+            aZ = -json_data["aZ"]
             gX = - json_data["gX"]*1.5 + self.gX_offset
             gY = - json_data["gY"]*1.5 + self.gY_offset
             gZ = - json_data["gZ"]*1.5 + self.gZ_offset # z方向だけ逆

@@ -28,7 +28,7 @@ class pose_observer_quaternion:
         g_vec_from_q = q2g_vec(self.q)
         norm = np.linalg.norm(g_vec_from_sensor)
         g_vec_from_sensor = g_vec_from_sensor / norm
-        g_vec_err = -np.cross(g_vec_from_sensor, g_vec_from_q)
+        g_vec_err = np.cross(g_vec_from_sensor, g_vec_from_q)
         g_vec_err = np.arcsin(g_vec_err) # 線形のFBに補正
         self.g_vec_err_sum += g_vec_err * self.dt
         w = w + self.kp * g_vec_err + self.ki * self.g_vec_err_sum
@@ -96,7 +96,7 @@ class pose_observer_euler:
         # 加速度センサの重力ベクトル
         g_vec_from_sensor = g_vec_from_sensor / norm
         # 偏差計算
-        g_vec_err = -np.cross(g_vec_from_sensor, g_vec_from_rpy)
+        g_vec_err = np.cross(g_vec_from_sensor, g_vec_from_rpy)
         g_vec_err = np.arcsin(g_vec_err) # 線形のFBに補正
         self.g_vec_err_sum += g_vec_err * self.dt
         # 補正
